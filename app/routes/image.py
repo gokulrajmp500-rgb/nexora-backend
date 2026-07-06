@@ -1,5 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, Form
-from app.services.image_service import analyze_image
+from app.services.gemini_service import analyze_image
 
 router = APIRouter(
     prefix="/image",
@@ -11,5 +11,11 @@ async def image_analyze(
     image: UploadFile = File(...),
     prompt: str = Form(...)
 ):
-    result = await analyze_image(image, prompt)
-    return result
+    image_bytes = await image.read()
+
+    result = analyze_image(image_bytes, prompt)
+
+    return {
+        "success": True,
+        "result": result
+    }
