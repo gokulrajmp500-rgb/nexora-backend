@@ -1,43 +1,21 @@
 import os
-import io
+import google.generativeai as genai
 
-from dotenv import load_dotenv
-from google import genai
-from PIL import Image
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-load_dotenv()
-
-client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 
+# ✅ CHAT FUNCTION
 def ask_gemini(prompt: str):
-    try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
-
-        return response.text
-
-    except Exception as e:
-        return str(e)
+    response = model.generate_content(prompt)
+    return response.text
 
 
-def analyze_image(image_bytes, prompt):
-    try:
-        image = Image.open(io.BytesIO(image_bytes))
-
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=[
-                prompt,
-                image
-            ]
-        )
-
-        return response.text
-
-    except Exception as e:
-        return str(e)
+# ✅ IMAGE ANALYZE FUNCTION (IMPORTANT - THIS WAS MISSING)
+def analyze_image(image_bytes: bytes, prompt: str):
+    response = model.generate_content([
+        prompt,
+        image_bytes
+    ])
+    return response.text
