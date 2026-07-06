@@ -1,15 +1,15 @@
-from fastapi import APIRouter
-from app.services.image_generate_service import generate_image
+from fastapi import APIRouter, UploadFile, File, Form
+from app.services.image_service import analyze_image
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/image",
+    tags=["Image Analyze"]
+)
 
-# IMAGE GENERATE ROUTE
-@router.post("/generate")
-async def create_image(data: dict):
-    prompt = data["prompt"]
-    image = generate_image(prompt)
-
-    return {
-        "message": "success",
-        "image": image
-    }
+@router.post("/analyze")
+async def image_analyze(
+    image: UploadFile = File(...),
+    prompt: str = Form(...)
+):
+    result = await analyze_image(image, prompt)
+    return result
